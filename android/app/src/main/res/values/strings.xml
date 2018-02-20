@@ -1,0 +1,4 @@
+<resources>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">hyD9CBYB5D92JbFPLHY7YNMNJhfg8e630342-df63-4670-806f-293452da19c5</string>
+    <string name="app_name">ipos_cafe</string>
+</resources>

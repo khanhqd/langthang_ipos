@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "143024788257",
+    "firebase_url": "https://ipos-cafe.firebaseio.com",
+    "project_id": "ipos-cafe",
+    "storage_bucket": "ipos-cafe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143024788257:android:feff5865c4daa367",
+        "android_client_info": {
+          "package_name": "com.ipos_cafe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143024788257-rlm5vbsbmi21gu9u64iouc1nsj3s2k0i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ipos_cafe",
+            "certificate_hash": "7de96e4fa04554dba2abb39be4fbe6fe121310cc"
+          }
+        },
+        {
+          "client_id": "143024788257-iskijt0e47ar6e4mcertvivb7f7kp58n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0y4Wh5nyxg1Vnjxi3QAMHVIXdE6AbX0U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143024788257-iskijt0e47ar6e4mcertvivb7f7kp58n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "143024788257-2b9jd95vd626ngklu44u9alm2gj94m36.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.igteam.iposcafe"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
