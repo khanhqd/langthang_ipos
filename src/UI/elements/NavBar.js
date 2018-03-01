@@ -8,7 +8,9 @@ import GLOBAL from '../../constants/style';
 const NavBar = props => {
     return (
         <View>
-            {/* <View style={{ height: 20, width: '100%', backgroundColor: props.statusbarColor || '#4A4F70' }} /> */}
+            {Platform.OS == 'ios' &&
+                <View style={{ height: 20, width: '100%', backgroundColor: props.statusbarColor || '#4A4F70' }} />
+            }
             <View style={[styles.container, { backgroundColor: props.backgroundColor || '#4A4F70' }]}>
                 <TouchableOpacity
                     onPress={props.leftIconPress}

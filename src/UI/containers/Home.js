@@ -29,7 +29,8 @@ class Home extends Component {
         list_khoanchi: [],
         refreshing: false,
         isLoading: false,
-        selected_bill: {}
+        selected_bill: {},
+        countPress: 0
     }
     componentWillMount() {
         // firebase.auth().signInAnonymously()
@@ -227,6 +228,17 @@ class Home extends Component {
         }
     }
 
+    onSecretPress() {
+        this.setState({
+            countPress: this.state.countPress + 1
+        },() => {
+            if (this.state.countPress > 3) {
+                this.props.navigation.navigate("Admin")
+                this.setState({ countPress: 0 })
+            }
+        })
+    }
+
     render() {
         const options = ['Hủy', 'Thanh toán', 'Sửa', 'Xóa']
         return (
@@ -308,6 +320,7 @@ class Home extends Component {
                     money_counter={this.state.money_counter}
                     bill_counter={this.state.order_counter}
                     onPressBtn={() => this.onCreateOrder()}
+                    onSecretPress={() => this.onSecretPress()}
                 />
                 {this.state.isLoading &&
                     <View style={{ position: 'absolute', width: width, height: height, alignItems: 'center', justifyContent: 'center' }}>

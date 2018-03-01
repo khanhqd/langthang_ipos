@@ -6,6 +6,7 @@ import appReducer from "@redux/reducers";
 import initialState from "@redux/initialState";
 import storeFactory from "@redux/store";
 import { Provider } from "react-redux";
+import Orientation from 'react-native-orientation';
 export const store = storeFactory(initialState);
 
 import BaseContainer from "./BaseComponent";
@@ -14,11 +15,17 @@ import Template from './containers/ContainerTemplate';
 import Home from './containers/Home';
 import Create_Order from './containers/Create_Order';
 import Create_KhoanChi from './containers/Create_KhoanChi';
-import Orientation from 'react-native-orientation';
+import Admin from './containers/Admin';
 
 const width = Dimensions.get("window").width;
 
 const Main = StackNavigator({
+    Admin: {
+        screen: Admin,
+        navigationOptions: {
+            header: null,
+        }
+    },
     Home: {
         screen: Home,
         navigationOptions: {
@@ -39,12 +46,13 @@ const Main = StackNavigator({
             header: null,
             gesturesEnabled: true
         }
-    }
+    },
+    
 })
 
 export default class App extends BaseContainer {
     componentDidMount() {
-        Orientation.lockToLandscape()
+        // Orientation.lockToLandscape()
     }
     render() {
         return (

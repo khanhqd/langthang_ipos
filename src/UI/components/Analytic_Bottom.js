@@ -16,10 +16,10 @@ export default class Analytic extends Component {
                 <TouchableOpacity onPress={()=>this.props.onPressBtn()} style={styles.analytic_container}>
                     <View style={styles.floatBtn_container}/>
                 </TouchableOpacity>
-                <View style={styles.analytic_container}>
+                <TouchableOpacity style={styles.analytic_container} onPress={this.props.onSecretPress} activeOpacity={1}>
                     <Text>Tổng doanh thu</Text>
                     <Text style={styles.greenText}>{VarHelper.number_format(parseInt(this.props.money_counter), '.', '.')}</Text>
-                </View>
+                </TouchableOpacity>
             </View>
         );
     }
