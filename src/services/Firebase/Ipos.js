@@ -252,11 +252,24 @@ class IposHelper extends Component {
                 firebase.database().ref('analytic').child(`pays/y${year}/m${month}/pay_counter`).transaction((view) => {
                     return view + amount;
                 });
+                firebase.database().ref('analytic').child(`sales/y${year}/m${month}/d${date}/pay_counter`).transaction((view) => {
+                    return view + amount;
+                });
             } else {
                 reject(err)
             }
         })
     })
+
+    getAnalytic_month = (select_month,callback) => {
+        let year = new Date().getFullYear()
+        let month = select_month || new Date().getMonth() + 1
+        let date = new Date().getDate()
+        firebase.database().ref("analytic").child(`sales/y${year}/m${month}`).on('value', data => {
+            let obj = data.val();
+            typeof callback === "function" && callback(obj);
+        })
+    }
 }
 //      firebaseApp.database().ref('countUserOnSpin').transaction(function (view) {
 //          return view + 1;
