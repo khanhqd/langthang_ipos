@@ -16,10 +16,18 @@ import Home from './containers/Home';
 import Create_Order from './containers/Create_Order';
 import Create_KhoanChi from './containers/Create_KhoanChi';
 import Admin from './containers/Admin';
+import TestHepler from './containers/TestHelperV2';
+import HomeWithMap from './containers/HomeWithMap';
 
 const width = Dimensions.get("window").width;
 
 const Main = StackNavigator({
+    HomeWithMap: {
+        screen: HomeWithMap,
+        navigationOptions: {
+            header: null,
+        }
+    },
     Admin: {
         screen: Admin,
         navigationOptions: {
