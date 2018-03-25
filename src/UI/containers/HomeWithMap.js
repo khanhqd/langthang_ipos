@@ -1,14 +1,27 @@
 import React, { Component } from 'react';
 import { View, Text, ImageBackground, AsyncStorage, StatusBar } from 'react-native';
+import { ActionSheet } from 'native-base';
 import IposHelper from '../../services/Firebase/Ipos';
 import Analytic_Bottom2 from '../components/Analytic_Bottom2';
 import Table from '../elements/Table';
+import FirebaseHelper from '../../services/Firebase/Ipos_v2';
+import VarHelper from '../../utils/VarHelper';
+import Modal from "react-native-modal";
+import PaymentPopup from '../components/PaymentPopup';
+
+var BUTTONS = ["Thanh toán", "Chi tiết", "Sửa order", "Xóa", "Cancel"];
+var DESTRUCTIVE_INDEX = 3;
+var CANCEL_INDEX = 4;
 
 export default class HomeWithMap extends Component {
     state = {
-        usedTableList: [1, 3, 5, 7, 9],
         menu: [],
-        countPress: 0
+        countPress: 0,
+        list_orders: [],
+        not_paids: [],
+        selectedItem: {},
+        showModal: false,
+        totalMoney: 0
     }
     componentDidMount() {
         StatusBar.setHidden(true)
@@ -23,12 +36,75 @@ export default class HomeWithMap extends Component {
             this.setState({ menu })
             AsyncStorage.setItem("menu", JSON.stringify(menu))
         })
+        this.getOrderToday()
+        setTimeout(() => {
+            FirebaseHelper.onNewOrder(data => {
+                let list_orders;
+                list_orders = VarHelper.uniqueArr([data, ...this.state.list_orders])
+                this.setState({
+                    list_orders,
+                    not_paids: list_orders.filter((item) => { return item.state != 'paid' }),
+                }, () => console.log(this.state.not_paids));
+            })
+        }, 1000)
     }
-    toDetail(active) {
-        if (active) {
-            alert('active')
-        } else {
-            alert('inactive')
+    getOrderToday() {
+        FirebaseHelper.getOrders_today().then((data) => {
+            if (data) {
+                this.setState({
+                    list_orders: data,
+                    not_paids: data.filter((item) => { return item.state != 'paid' }),
+                    isLoading: false,
+                }, () => console.log(this.state.not_paids))
+                let paids = data.filter((item) => { return item.state == 'paid' })
+                let totalMoney = 0
+                for (let i = 0; i< paids.length; i ++) {
+                    totalMoney = totalMoney + Number(paids[i].paid)
+                }
+                this.setState({ totalMoney })
+            }
+        })
+    }
+    handleAction(index) {
+        switch (index) {
+            case 0:
+                this.thanhToan()
+                break;
+            case 1:
+                this.chuyenBan()
+                break;
+            case 2:
+                this.editOrder()
+                break;
+            case 3:
+                this.deleteOrder()
+                break;
+            default:
+                break;
+        }
+    }
+    thanhToan() {
+        this.setState({ showModal: true })
+    }
+    toDetail(active, table) {
+        if (active.length > 0) {
+            this.props.navigation.navigate("SelectOrder", { orders: active, menu: this.state.menu, table, refresh: () => this.getOrderToday() })
+        }
+        // else if (active.length == 1) {
+        //     this.setState({ selectedItem: active[0] })
+        //     ActionSheet.show(
+        //         {
+        //             options: BUTTONS,
+        //             cancelButtonIndex: CANCEL_INDEX,
+        //             destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        //         },
+        //         buttonIndex => {
+        //             this.setState({ clicked: BUTTONS[buttonIndex] }, () => this.handleAction(buttonIndex));
+        //         }
+        //     )
+        // }
+        else {
+            this.props.navigation.navigate("CreateOrder", { menu: this.state.menu, table })
         }
     }
     onSecretPress() {
@@ -53,24 +129,24 @@ export default class HomeWithMap extends Component {
                         <View style={styles.topViewTop}>
                             <View style={styles.topleftTop}>
                                 <View style={{ alignItems: 'center' }}>
-                                    <Table id={1} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
-                                    <Table id={2} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                                    <Table id={1} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 1)} />
+                                    <Table id={2} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 2)} />
                                 </View>
                                 <View style={styles.topViewBottom}>
-                                    <Table id={3} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
-                                    <Table id={4} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                                    <Table id={3} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 3)} />
+                                    <Table id={4} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 4)} />
                                 </View>
                             </View>
                             <View style={styles.topRightTop}>
-                                <Table id={5} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                                <Table id={5} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 5)} />
                                 <View style={styles.quay}>
                                     <Text style={{ color: 'white' }}>Quầy</Text>
                                 </View>
                             </View>
                         </View>
                         <View style={styles.topViewBottom}>
-                            <Table id={6} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
-                            <Table id={7} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                            <Table id={6} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 6)} />
+                            <Table id={7} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 7)} />
                             <View
                                 onTouchStart={() => this.onSecretPress()}
                                 style={{ width: 80, height: '100%', borderLeftWidth: 1, borderColor: 'white' }}
@@ -80,31 +156,45 @@ export default class HomeWithMap extends Component {
                     <View style={styles.bottomView}>
                         <View style={styles.leftBottom}>
                             <View style={{ flex: 1 }}>
-                                <Table id={8} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                                <Table id={8} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 8)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Table id={9} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                                <Table id={9} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 9)} />
                             </View>
                         </View>
                         <View style={styles.centerBottom}>
-                            <Table id={10} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
-                            <Table id={11} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
-                            <Table id={12} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                            <Table id={10} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 10)} />
+                            <Table id={11} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 11)} />
+                            <Table id={12} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 12)} />
                         </View>
                         <View style={styles.rightBottom}>
-                            <Table id={13} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
-                            <Table id={14} usedTableList={this.state.usedTableList} onPress={(active) => this.toDetail(active)} />
+                            <Table id={13} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 13)} />
+                            <Table id={14} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 14)} />
                         </View>
                     </View>
                 </View>
                 <Analytic_Bottom2
-                    not_paid={20}
-                    money_counter={1000}
-                    bill_counter={10}
+                    not_paid={this.state.not_paids.length}
+                    money_counter={this.state.totalMoney}
+                    bill_counter={this.state.list_orders.length}
                     onPressLeft={() => { }}
                     onPressCenter={() => { }}
                     onPressRight={() => { }}
                 />
+                <Modal
+                    backdropOpacity={0.3}
+                    isVisible={this.state.showModal}
+                    onBackdropPress={() => this.setState({ showModal: false })}
+                >
+                    <PaymentPopup
+                        onSuccess={() => {
+                            this.setState({ showModal: false })
+                            this.props.navigation.state.params.refresh()
+                            this.removePaid()
+                        }}
+                        order={this.state.selectedItem}
+                    />
+                </Modal>
             </ImageBackground>
         )
     }

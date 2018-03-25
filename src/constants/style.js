@@ -10,7 +10,7 @@ const STYLE = {
     COLOR: {
         PRIMARY: "black",
         BACKGROUND: "grey",
-        BORDER: "grey",
+        BORDER: "#919191",
         TEXT: 'black'
     },
 };

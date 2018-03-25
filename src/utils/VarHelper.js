@@ -46,6 +46,13 @@ class VarHelper {
         //cắt bỏ ký tự - ở đầu và cuối chuỗi 
         return str;
     }
+    getTotalMoney(data) {
+        let amount = 0
+        for (let i = 0; i < data.length; i++) {
+            amount += data[i].price * data[i].quantity
+        }
+        return amount
+    }
 }
 
 export default new VarHelper();

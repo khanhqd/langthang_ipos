@@ -7,7 +7,6 @@ import BaseComponent from '../BaseComponent';
 import { connect } from 'react-redux';
 import NavBar from '../elements/NavBar';
 import IposHelper from '../../services/Firebase/Ipos';
-import Chart from 'react-native-chart';
 import AnalyticBox from '../elements/AnalyticBox';
 import AnalyticList from '../elements/AnalyticList';
 

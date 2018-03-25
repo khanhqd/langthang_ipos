@@ -15,13 +15,6 @@ let item_demo = {
 }
 
 class TestHepler extends Component {
-    getTotalMoney(data) {
-        let amount = 0
-        for (let i = 0; i < data.length; i++) {
-            amount += data[i].price * data[i].quantity
-        }
-        return amount
-    }
     createOrder() {
         let data = {
             table: 'a1',

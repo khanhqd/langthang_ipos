@@ -36,22 +36,9 @@ const NavBar = props => {
                 </View>
                 <TouchableOpacity
                     onPress={props.rightIconPress}
-                    style={styles.btnContainer}
+                    style={[styles.btnContainer, { width: 80 }]}
                 >
-                    {props.rightBtnText ?
-                        <Text
-                            numberOfLines={1}
-                            style={[styles.btnText, { marginRight: 10, width: 50 }]}
-                        >
-                            {props.rightBtnText}
-                        </Text>
-                        :
-                        <Image
-                            resizeMode="contain"
-                            source={props.rightIcon}
-                            style={{ width: 18, height: 18 }}
-                        />
-                    }
+                    {props.children}
                 </TouchableOpacity>
             </View>
         </View>

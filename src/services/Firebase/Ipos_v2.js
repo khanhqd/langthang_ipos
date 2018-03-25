@@ -10,6 +10,30 @@ let today = {
 }
 
 class Helper extends Component {
+    getOrders_today = () => new Promise((resolve, reject) => {
+        firebase.database().ref("ver2").child("orders").orderByChild("ts_date").equalTo(today.ts_date).once("value", snapshot => {
+            let resData = snapshot.val()
+            let arr = [];
+            for (let key in resData) {
+                arr.push({
+                    key,
+                    ...resData[key]
+                })
+            }
+            resolve(arr);
+        });
+    })
+    onNewOrder = (callback) => {
+        firebase.database().ref("ver2").child("orders").limitToLast(1).on('value', data => {
+            if (data.val() == null) return;
+            let obj = data.val();
+            let key = Object.keys(obj)[0];
+            typeof callback === "function" && callback({
+                key,
+                ...obj[key]
+            });
+        })
+    }
     createOrder = (data) => new Promise((resolve, reject) => {
         let sendData = {
             ...data,
@@ -30,7 +54,7 @@ class Helper extends Component {
             ...data,
             lastUpdate: firebase.database.ServerValue.TIMESTAMP,
         }
-        firebase.database().ref("ver2").child("orders").child(key).set(sendData, (err) => {
+        firebase.database().ref("ver2").child("orders").child(key).update(sendData, (err) => {
             if (!err) {
                 resolve('success')
             } else {
@@ -47,7 +71,13 @@ class Helper extends Component {
             }
         })
     })
-    paidOrder = (key, paid, discount, discount_note) => new Promise((resolve, reject) => {
+    paidOrder = (key, totalMoney, discount, discount_note) => new Promise((resolve, reject) => {
+        let paid
+        if (totalMoney < 1000) {
+            paid = totalMoney * 1000
+        } else {
+            paid = totalMoney
+        }
         let sendData = {
             checkout: firebase.database.ServerValue.TIMESTAMP,
             paid,

@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Dimensions } from "react-native";
 import { StackNavigator, TabNavigator, DrawerNavigator } from 'react-navigation';
+import { Root } from "native-base";
 //redux
 import appReducer from "@redux/reducers";
 import initialState from "@redux/initialState";
@@ -13,17 +14,24 @@ import BaseContainer from "./BaseComponent";
 import DrawerMenu from './components/DrawerMenu';
 import Template from './containers/ContainerTemplate';
 import Home from './containers/Home';
-import Create_Order from './containers/Create_Order';
+import CreateOrder from './containers/CreateOrderV2';
 import Create_KhoanChi from './containers/Create_KhoanChi';
 import Admin from './containers/Admin';
 import TestHepler from './containers/TestHelperV2';
 import HomeWithMap from './containers/HomeWithMap';
+import SelectOrder from './containers/SelectOrder';
 
 const width = Dimensions.get("window").width;
 
 const Main = StackNavigator({
     HomeWithMap: {
         screen: HomeWithMap,
+        navigationOptions: {
+            header: null,
+        }
+    },
+    SelectOrder: {
+        screen: SelectOrder,
         navigationOptions: {
             header: null,
         }
@@ -41,8 +49,8 @@ const Main = StackNavigator({
             gesturesEnabled: true
         }
     },
-    Create_Order: {
-        screen: Create_Order,
+    CreateOrder: {
+        screen: CreateOrder,
         navigationOptions: {
             header: null,
             gesturesEnabled: true
@@ -55,7 +63,7 @@ const Main = StackNavigator({
             gesturesEnabled: true
         }
     },
-    
+
 })
 
 export default class App extends BaseContainer {
@@ -65,7 +73,9 @@ export default class App extends BaseContainer {
     render() {
         return (
             <Provider store={store}>
-                <Main />
+                <Root>
+                    <Main />
+                </Root>
             </Provider>
         );
     }
