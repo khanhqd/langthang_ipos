@@ -115,7 +115,7 @@ export default class CreateOrder extends Component {
 
     createOrder() {
         if (this.state.isLoading) return;
-        let oldOrder = this.props.navigation.state.params.oldOrder
+        let { oldOrder, onSuccess } = this.props.navigation.state.params
         this.setState({ isLoading: true }, () => {
             let data = {
                 table: this.state.table,
@@ -127,12 +127,14 @@ export default class CreateOrder extends Component {
                     .then(() => {
                         this.setState({ isLoading: false })
                         this.props.navigation.goBack()
+                        if (typeof(onSuccess) == 'function') onSuccess()
                     }).catch((e) => { console.log(e) })
             } else {
                 FirebaseHelper.createOrder(data)
                     .then(() => {
                         this.setState({ isLoading: false })
                         this.props.navigation.goBack()
+                        if (typeof(onSuccess) == 'function') onSuccess()
                     }).catch((e) => {
                         alert(e.toString())
                         this.setState({ isLoading: false })

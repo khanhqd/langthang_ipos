@@ -43,7 +43,7 @@ export default class HomeWithMap extends Component {
                 list_orders = VarHelper.uniqueArr([data, ...this.state.list_orders])
                 this.setState({
                     list_orders,
-                    not_paids: list_orders.filter((item) => { return item.state != 'paid' }),
+                    not_paids: list_orders.filter((item) => { return item.state != 'paid' && item.state != 'delete' }),
                 }, () => console.log(this.state.not_paids));
             })
         }, 1000)
@@ -53,7 +53,7 @@ export default class HomeWithMap extends Component {
             if (data) {
                 this.setState({
                     list_orders: data,
-                    not_paids: data.filter((item) => { return item.state != 'paid' }),
+                    not_paids: data.filter((item) => { return item.state != 'paid' && item.state != 'delete' }),
                     isLoading: false,
                 }, () => console.log(this.state.not_paids))
                 let paids = data.filter((item) => { return item.state == 'paid' })

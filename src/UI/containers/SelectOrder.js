@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {
-    View, StyleSheet, TouchableOpacity, Text, KeyboardAvoidingView
+    View, StyleSheet, TouchableOpacity, Text, KeyboardAvoidingView,
 } from 'react-native';
-import { List, ListItem, ActionSheet } from 'native-base';
+import { List, ListItem, ActionSheet, Toast } from 'native-base';
 import Helper from '../../services/Firebase/Ipos_v2';
 import NavBar from '../elements/NavBar';
 import moment from 'moment';
@@ -19,6 +19,13 @@ export default class SelectOrder extends Component {
         showModal: false,
         selectedItem: {},
         orders: this.props.navigation.state.params.orders
+    }
+    componentDidMount() {
+        Toast.show({
+            text: 'Chọn 1 đơn để thanh toán hoặc chỉnh sửa',
+            position: 'bottom',
+            buttonText: 'Ok'
+        })
     }
     onPressItem = (title, data) => {
         this.setState({ selectedItem: data }, () => {
@@ -71,7 +78,7 @@ export default class SelectOrder extends Component {
     }
     editOrder() {
         let { menu, table } = this.props.navigation.state.params
-        this.props.navigation.navigate("CreateOrder", { menu, table, oldOrder: this.state.selectedItem })
+        this.props.navigation.navigate("CreateOrder", { menu, table, oldOrder: this.state.selectedItem, onSuccess: () => this.onCreateOrderSuccess() })
     }
     removePaid() {
         let removeId = this.state.selectedItem.key
@@ -81,7 +88,23 @@ export default class SelectOrder extends Component {
     }
     onCreateOrder() {
         let { menu, table } = this.props.navigation.state.params
-        this.props.navigation.navigate("CreateOrder", { menu, table })
+        this.props.navigation.navigate("CreateOrder", { menu, table, onSuccess: () => this.onCreateOrderSuccess() })
+    }
+    onCreateOrderSuccess() {
+        setTimeout(() => {
+            this.props.navigation.goBack()
+        }, 100)
+    }
+    deleteOrder() {
+        FirebaseHelper.changeOrderState(this.state.selectedItem.key, 'delete')
+            .then(() => {
+                Toast.show({
+                    text: 'Xóa thành công',
+                    position: 'bottom',
+                    buttonText: 'Ok'
+                })
+                this.props.navigation.goBack()
+            }).catch((e) => { })
     }
     render() {
         return (
@@ -109,7 +132,9 @@ export default class SelectOrder extends Component {
                                     <List style={{ width: '100%', paddingLeft: 20, paddingRight: 20 }}>
                                         {item.items.map((order_item, index) => {
                                             return (
-                                                <ListItem key={`or_${index}`} style={{ justifyContent: 'space-between', borderBottomWidth: 0 }}>
+                                                <ListItem
+                                                    onPress={() => this.onPressItem(`Checkin ${time} - ${item.items.length} đồ - ${item.money / 1000}K`, item)}
+                                                    key={`or_${index}`} style={{ justifyContent: 'space-between', borderBottomWidth: 0 }}>
                                                     <Text>{order_item.quantity}</Text>
                                                     <Text>{order_item.item_name}</Text>
                                                     <Text>{order_item.price / 1000}K</Text>
