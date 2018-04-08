@@ -14,6 +14,29 @@ var BUTTONS = ["Thanh toán", "Chi tiết", "Sửa order", "Xóa", "Cancel"];
 var DESTRUCTIVE_INDEX = 3;
 var CANCEL_INDEX = 4;
 
+class OrderItem extends Component {
+    state = {
+        selected: this.props.selected || false
+    }
+    render() {
+        let selected = this.state.selected
+        let item = this.props.item
+        let order_item = this.props.order_item
+        return (
+            <ListItem
+                onPress={() => {
+                    this.props.navigation.state.params.onPressOrderItem(item, order_item)
+                    this.setState({ selected: !selected })
+                }}
+                style={{ justifyContent: 'space-between', borderBottomWidth: 0, backgroundColor: selected ? 'grey' : 'white' }}>
+                <Text>{order_item.quantity}</Text>
+                <Text>{order_item.item_name}</Text>
+                <Text>{order_item.price / 1000}K</Text>
+            </ListItem>
+        )
+    }
+}
+
 export default class SelectOrder extends Component {
     state = {
         showModal: false,
@@ -70,7 +93,8 @@ export default class SelectOrder extends Component {
                     buttonText: 'Ok'
                 })
                 FirebaseHelper.countProduct(order.items)
-                this.props.onSuccess()
+                this.props.navigation.state.params.refresh()
+                this.removePaid()
             }).catch((e) => { })
     }
     thanhToan() {
@@ -125,20 +149,20 @@ export default class SelectOrder extends Component {
                             return (
                                 <View key={index}>
                                     <ListItem
+                                        style={{ backgroundColor: 'rgb(13,159,103)' }}
                                         onPress={() => this.onPressItem(`Checkin ${time} - ${item.items.length} đồ - ${item.money / 1000}K`, item)}
                                     >
-                                        <Text style={{ fontWeight: 'bold' }}>  Checkin {time}   -   {item.items.length} đồ   -   {item.money / 1000}K</Text>
+                                        <Text style={{ fontWeight: 'bold', color: 'white' }}>  Checkin {time}   -   {item.items.length} đồ   -   {item.money / 1000}K</Text>
                                     </ListItem>
                                     <List style={{ width: '100%', paddingLeft: 20, paddingRight: 20 }}>
                                         {item.items.map((order_item, index) => {
                                             return (
-                                                <ListItem
-                                                    onPress={() => this.onPressItem(`Checkin ${time} - ${item.items.length} đồ - ${item.money / 1000}K`, item)}
-                                                    key={`or_${index}`} style={{ justifyContent: 'space-between', borderBottomWidth: 0 }}>
-                                                    <Text>{order_item.quantity}</Text>
-                                                    <Text>{order_item.item_name}</Text>
-                                                    <Text>{order_item.price / 1000}K</Text>
-                                                </ListItem>
+                                                <OrderItem
+                                                    key={`or_${index}`}
+                                                    order_item={order_item}
+                                                    item={item}
+                                                    navigation={this.props.navigation}
+                                                />
                                             )
                                         })}
                                     </List>

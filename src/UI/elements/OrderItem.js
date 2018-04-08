@@ -8,7 +8,7 @@ const OrderItem = props => {
         <View style={styles.container}>
             <View style={{
                 height: 50,
-                width: 193,
+                flex: 1,
                 justifyContent: 'center',
                 paddingLeft: 15
             }}>

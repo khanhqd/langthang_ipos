@@ -8,7 +8,7 @@ import FirebaseHelper from '../../services/Firebase/Ipos_v2';
 import VarHelper from '../../utils/VarHelper';
 import Modal from "react-native-modal";
 import PaymentPopup from '../components/PaymentPopup';
-
+var codePush = require('react-native-code-push');
 var BUTTONS = ["Thanh toán", "Chi tiết", "Sửa order", "Xóa", "Cancel"];
 var DESTRUCTIVE_INDEX = 3;
 var CANCEL_INDEX = 4;
@@ -21,7 +21,8 @@ export default class HomeWithMap extends Component {
         not_paids: [],
         selectedItem: {},
         showModal: false,
-        totalMoney: 0
+        totalMoney: 0,
+        paidOrderItem: {}
     }
     componentDidMount() {
         StatusBar.setHidden(true)
@@ -47,6 +48,35 @@ export default class HomeWithMap extends Component {
                 }, () => console.log(this.state.not_paids));
             })
         }, 1000)
+        this.checkCodePush()
+    }
+    checkCodePush = () => {
+        codePush.allowRestart();
+        codePush.sync({ updateDialog: false, installMode: codePush.InstallMode.ON_NEXT_RESTART },
+            (status) => {
+                switch (status) {
+                    case codePush.SyncStatus.CHECKING_FOR_UPDATE:
+                        break;
+                    case codePush.SyncStatus.DOWNLOADING_PACKAGE:
+                        alert('Đang cập nhật phiên bản mới')
+                        break;
+                    case codePush.SyncStatus.INSTALLING_UPDATE:
+                        break;
+                    case codePush.SyncStatus.UP_TO_DATE:
+                        codePush.notifyApplicationReady();
+                        break;
+                    case codePush.SyncStatus.UPDATE_INSTALLED:
+                        codePush.notifyApplicationReady();
+                        break;
+                    case codePush.SyncStatus.UNKNOWN_ERROR:
+                        codePush.notifyApplicationReady();
+                        break;
+                }
+            },
+            ({ receivedBytes, totalBytes }) => {
+
+            }
+        );
     }
     getOrderToday() {
         FirebaseHelper.getOrders_today().then((data) => {
@@ -58,7 +88,7 @@ export default class HomeWithMap extends Component {
                 }, () => console.log(this.state.not_paids))
                 let paids = data.filter((item) => { return item.state == 'paid' })
                 let totalMoney = 0
-                for (let i = 0; i< paids.length; i ++) {
+                for (let i = 0; i < paids.length; i++) {
                     totalMoney = totalMoney + Number(paids[i].paid)
                 }
                 this.setState({ totalMoney })
@@ -86,9 +116,23 @@ export default class HomeWithMap extends Component {
     thanhToan() {
         this.setState({ showModal: true })
     }
+    onPressOrderItem(item,order_item) {
+        let obj = this.state.paidOrderItem
+        let selected = this.state.paidOrderItem[item.key] || {}
+        selected[order_item.id] = true
+        obj[item.key] = selected
+        this.setState({ paidOrderItem: obj })
+    }
     toDetail(active, table) {
         if (active.length > 0) {
-            this.props.navigation.navigate("SelectOrder", { orders: active, menu: this.state.menu, table, refresh: () => this.getOrderToday() })
+            this.props.navigation.navigate("SelectOrder", { 
+                orders: active, 
+                menu: this.state.menu, 
+                table, 
+                paidOrderItem: this.state.paidOrderItem,
+                refresh: () => this.getOrderToday(),
+                onPressOrderItem: (item,order_item) => this.onPressOrderItem(item,order_item)
+            })
         }
         // else if (active.length == 1) {
         //     this.setState({ selectedItem: active[0] })
@@ -139,7 +183,7 @@ export default class HomeWithMap extends Component {
                             </View>
                             <View style={styles.topRightTop}>
                                 <Table id={5} orderList={this.state.not_paids} onPress={(active) => this.toDetail(active, 5)} />
-                                <View style={styles.quay}>
+                                <View style={styles.quay} onTouchStart={() => this.props.navigation.navigate('DrawerOpen')}>
                                     <Text style={{ color: 'white' }}>Quầy</Text>
                                 </View>
                             </View>

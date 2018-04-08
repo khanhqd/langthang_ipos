@@ -125,5 +125,19 @@ class Helper extends Component {
             }
         })
     })
+    getListStaff = () => new Promise((resolve, reject) => {
+        firebase.database().ref("ver2").child("staffs/info").once("value", snapshot => {
+            let resData = snapshot.val()
+            let arr = [];
+            for (let key in resData) {
+                if (resData[key])
+                    arr.push({
+                        key,
+                        ...resData[key]
+                    })
+            }
+            resolve(arr);
+        });
+    })
 }
 export default new Helper();

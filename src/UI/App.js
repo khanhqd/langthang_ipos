@@ -9,9 +9,9 @@ import storeFactory from "@redux/store";
 import { Provider } from "react-redux";
 import Orientation from 'react-native-orientation';
 export const store = storeFactory(initialState);
+import DrawerMenu from './components/Drawer';
 
 import BaseContainer from "./BaseComponent";
-import DrawerMenu from './components/DrawerMenu';
 import Template from './containers/ContainerTemplate';
 import Home from './containers/Home';
 import CreateOrder from './containers/CreateOrderV2';
@@ -20,12 +20,27 @@ import Admin from './containers/Admin';
 import TestHepler from './containers/TestHelperV2';
 import HomeWithMap from './containers/HomeWithMap';
 import SelectOrder from './containers/SelectOrder';
+import Staffs from './containers/Staffs';
+import Camera from './containers/Camera';
 
 const width = Dimensions.get("window").width;
 
 const Main = StackNavigator({
     HomeWithMap: {
         screen: HomeWithMap,
+        navigationOptions: {
+            header: null,
+            gesturesEnabled: true,   
+        }
+    },
+    Staffs: {
+        screen: Staffs,
+        navigationOptions: {
+            title: 'Chấm công'
+        }
+    },
+    Camera: {
+        screen: Camera,
         navigationOptions: {
             header: null,
         }
@@ -66,6 +81,22 @@ const Main = StackNavigator({
 
 })
 
+const Container = DrawerNavigator({
+    tabbar: {
+        screen: Main,
+    },
+},
+    {
+        drawerOpenRoute: 'DrawerOpen',
+        drawerCloseRoute: 'DrawerClose',
+        drawerToggleRoute: 'DrawerToggle',
+        drawerWidth: width / 2.5,
+        drawerPosition: 'left',
+        drawerLockMode: 'locked-closed',
+        contentComponent: props => <DrawerMenu {...props} />
+    },
+);
+
 export default class App extends BaseContainer {
     componentDidMount() {
         // Orientation.lockToLandscape()
@@ -74,7 +105,7 @@ export default class App extends BaseContainer {
         return (
             <Provider store={store}>
                 <Root>
-                    <Main />
+                    <Container />
                 </Root>
             </Provider>
         );

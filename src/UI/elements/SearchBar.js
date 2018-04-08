@@ -28,7 +28,7 @@ const styles = {
         marginBottom: 10,
         borderWidth: 1,
         alignItems: 'center',
-        borderColor: 'rgb(239,239,239)'
+        borderColor: 'grey'
     },
     icon: {
         width: 20,
