@@ -45,7 +45,7 @@ export default class HomeWithMap extends Component {
                 this.setState({
                     list_orders,
                     not_paids: list_orders.filter((item) => { return item.state != 'paid' && item.state != 'delete' }),
-                }, () => console.log(this.state.not_paids));
+                }, () => console.log('xxxx',this.state.not_paids));
             })
         }, 1000)
         this.checkCodePush()
@@ -85,7 +85,7 @@ export default class HomeWithMap extends Component {
                     list_orders: data,
                     not_paids: data.filter((item) => { return item.state != 'paid' && item.state != 'delete' }),
                     isLoading: false,
-                }, () => console.log(this.state.not_paids))
+                }, () => console.log('xxxx',this.state.not_paids))
                 let paids = data.filter((item) => { return item.state == 'paid' })
                 let totalMoney = 0
                 for (let i = 0; i < paids.length; i++) {
